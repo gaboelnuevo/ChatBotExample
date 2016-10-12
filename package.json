@@ -29,5 +29,8 @@
     "url": ""
   },
   "license": "UNLICENSED",
-  "description": "ChatBot"
+  "description": "ChatBot",
+  "engines": {
+    "node": ">=4.0.0"
+  }
 }
