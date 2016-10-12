@@ -119,6 +119,15 @@ var wit = new Wit({
 
 app.start = function() {
   // start the web server
+  app.use(function(_ref, rsp, next) {
+    var method = _ref.method;
+    var url = _ref.url;
+
+    rsp.on('finish', function() {
+      console.log(rsp.statusCode + ' ' + method + ' ' + url);
+    });
+    next();
+  });
   app.use('/webhook', bodyParser.json({verify: verifyRequestSignature}));
 
   // Webhook setup
