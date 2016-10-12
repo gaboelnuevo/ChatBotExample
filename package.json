@@ -31,6 +31,6 @@
   "license": "UNLICENSED",
   "description": "ChatBot",
   "engines": {
-    "node": ">=v.6.2.0"
+    "node": ">=v.6.2.2"
   }
 }
