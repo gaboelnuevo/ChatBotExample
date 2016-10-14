@@ -68,7 +68,7 @@ var fbMessage = function fbMessage(id, text) {
 
 var findOrCreateSession = function(fbid) {
   return new Promise(function(resolve, reject) {
-    app.Models.Session.findOrCreateSession(fbid, function(err, result) {
+    app.models.Session.findOrCreateSession(fbid, function(err, result) {
       if (err) reject(err);
       else resolve(result);
     });
@@ -77,7 +77,7 @@ var findOrCreateSession = function(fbid) {
 
 var findSessionById = function(sessionId) {
   return new Promise(function(resolve, reject) {
-    app.Models.Session.findById(fbid, {where: {
+    app.models.Session.findById(fbid, {where: {
       active: true,
     }}, function(err, result) {
       if (err) reject(err);
@@ -207,7 +207,7 @@ app.start = function() {
                     err.stack || err);
                   });
                 }
-              });
+              }).catch(console.error);
             })();
           } else {
             console.log('received event', JSON.stringify(event));
