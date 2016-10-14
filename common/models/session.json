@@ -24,6 +24,10 @@
       "required": true,
       "default": "$now"
     },
+    "updatedAt": {
+      "type": "date",
+      "default": "$now"
+    },
     "active": {
       "type": "boolean"
     }
