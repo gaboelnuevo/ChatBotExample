@@ -77,7 +77,7 @@ var findOrCreateSession = function(fbid) {
 
 var findSessionById = function(sessionId) {
   return new Promise(function(resolve, reject) {
-    app.models.Session.findById(fbid, {where: {
+    app.models.Session.findById(sessionId, {where: {
       active: true,
     }}, function(err, result) {
       if (err) reject(err);
