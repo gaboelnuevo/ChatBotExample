@@ -32,5 +32,9 @@
   "AppUser": {
     "dataSource": "db",
     "public": true
+  },
+  "Session": {
+    "dataSource": "db",
+    "public": true
   }
 }

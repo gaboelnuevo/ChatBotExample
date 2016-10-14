@@ -1,0 +1,35 @@
+{
+  "name": "Session",
+  "plural": "sessions",
+  "base": "PersistedModel",
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": {
+      "id": true,
+      "type": "string",
+      "defaultFn": "guid"
+    },
+    "fbid": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "required": true,
+      "default": {}
+    },
+    "createdAt": {
+      "type": "date",
+      "required": true,
+      "default": "$now"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
