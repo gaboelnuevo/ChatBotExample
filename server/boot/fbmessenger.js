@@ -2,23 +2,23 @@
 
 var crypto = require('crypto');
 
+// Wit.ai parameters
+var WIT_TOKEN = process.env.WIT_TOKEN;
+
+// Messenger API parameters
+var FB_PAGE_TOKEN = process.env.FB_PAGE_TOKEN;
+if (!FB_PAGE_TOKEN) { throw new Error('missing FB_PAGE_TOKEN'); }
+var FB_APP_SECRET = process.env.FB_APP_SECRET;
+if (!FB_APP_SECRET) { throw new Error('missing FB_APP_SECRET'); }
+
+var FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
+if (!FB_VERIFY_TOKEN) { throw new Error('missing FB_VERIFY_TOKEN'); }
+
 module.exports = function(app) {
   var bodyParser = require('body-parser');
 
   var Wit = require('node-wit').Wit;
   var log = require('node-wit').log;
-
-  // Wit.ai parameters
-  var WIT_TOKEN = process.env.WIT_TOKEN;
-
-  // Messenger API parameters
-  var FB_PAGE_TOKEN = process.env.FB_PAGE_TOKEN;
-  if (!FB_PAGE_TOKEN) { throw new Error('missing FB_PAGE_TOKEN'); }
-  var FB_APP_SECRET = process.env.FB_APP_SECRET;
-  if (!FB_APP_SECRET) { throw new Error('missing FB_APP_SECRET'); }
-
-  var FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
-  if (!FB_VERIFY_TOKEN) { throw new Error('missing FB_VERIFY_TOKEN'); }
 
   /*crypto.randomBytes(8, function(err, buff) {
     if (err) throw err;
