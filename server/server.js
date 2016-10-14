@@ -184,7 +184,7 @@ app.start = function() {
 
                   // Let's forward the message to the Wit.ai Bot Engine
                   // This will run all actions until our bot has nothing left to do
-                  wit.runActions(session.Id, // the user's current session
+                  wit.runActions(session.id, // the user's current session
                   text, // the user's message
                   session.context // the user's current session state
                   ).then(function(context) {
