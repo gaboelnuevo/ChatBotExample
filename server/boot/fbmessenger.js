@@ -192,11 +192,13 @@ module.exports = function(app) {
                     // }
 
                     // Updating the user's current session state
-                    session.updateAttributes({
-                      context: context,
-                      updatedAt: new Date(),
-                    }, function(err, ob) {
-                      Promise.resolve();
+                    return new Promise(function(resolve, reject) {
+                      session.updateAttributes({
+                        context: context,
+                        updatedAt: new Date(),
+                      }, function(err, ob) {
+                        return resolve();
+                      });
                     });
                   }).catch(function(err) {
                     console.error('Oops! Got an error from Wit: ',
