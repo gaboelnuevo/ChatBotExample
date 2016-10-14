@@ -64,23 +64,26 @@ var fbMessage = function fbMessage(id, text) {
 // This will contain all user sessions.
 // Each session has an entry:
 // sessionId -> {fbid: facebookUserId, context: sessionState}
-var sessions = {};
+// var sessions = {};
 
-var findOrCreateSession = function findOrCreateSession(fbid) {
-  var sessionId = void 0;
-  // Let's see if we already have a session for the user fbid
-  Object.keys(sessions).forEach(function(k) {
-    if (sessions[k].fbid === fbid) {
-      // Yep, got it!
-      sessionId = k;
-    }
+var findOrCreateSession = function(fbid) {
+  return new Promise(function(resolve, reject) {
+    app.Models.Session.findOrCreateSession(fbid, function(err, result) {
+      if (err) reject(err);
+      else resolve(result);
+    });
   });
-  if (!sessionId) {
-    // No session found for user fbid, let's create a new one
-    sessionId = new Date().toISOString();
-    sessions[sessionId] = {fbid: fbid, context: {}};
-  }
-  return sessionId;
+};
+
+var findSessionById = function(sessionId) {
+  return new Promise(function(resolve, reject) {
+    app.Models.Session.findById(fbid, {where: {
+      active: true,
+    }}, function(err, result) {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
 };
 
 // Our bot actions
@@ -91,22 +94,29 @@ var actions = {
 
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
-    var recipientId = sessions[sessionId].fbid;
-    if (recipientId) {
-      // Yay, we found our recipient!
-      // Let's forward our bot response to her.
-      // We return a promise to let our bot know when we're done sending
-      return fbMessage(recipientId, text).then(function() {
-        return null;
-      }).catch(function(err) {
-        var msg = 'Oops! An error occurred while forwarding the response to';
-        console.error(msg, recipientId, ':', err.stack || err);
-      });
-    } else {
-      console.error('Oops! Couldn\'t find user for session:', sessionId);
+
+    findSessionById(sessionId).then(function(session) {
+      var recipientId = session.fbid;
+      if (recipientId) {
+        // Yay, we found our recipient!
+        // Let's forward our bot response to her.
+        // We return a promise to let our bot know when we're done sending
+        return fbMessage(recipientId, text).then(function() {
+          return null;
+        }).catch(function(err) {
+          var msg = 'Oops! An error occurred while forwarding the response to';
+          console.error(msg, recipientId, ':', err.stack || err);
+        });
+      } else {
+        console.error('Oops! Couldn\'t find user for session:', sessionId);
+        // Giving the wheel back to our bot
+        return Promise.resolve();
+      }
+    }).catch(function(err) {
+      console.error('Oops! Couldn\'t find active session:', sessionId);
       // Giving the wheel back to our bot
       return Promise.resolve();
-    }
+    });
   },
 };
 
@@ -157,48 +167,47 @@ app.start = function() {
               // We retrieve the Facebook user ID of the sender
               var sender = event.sender.id;
 
-              // We retrieve the user's current session, or create one if it doesn't exist
-              // This is needed for our bot to figure out the conversation history
-              var sessionId = findOrCreateSession(sender);
+              findOrCreateSession(sender).then(function(session) {
+                // We retrieve the message content
+                var _event$message = event.message;
+                var text = _event$message.text;
+                var attachments = _event$message.attachments;
 
-              // We retrieve the message content
-              var _event$message = event.message;
-              var text = _event$message.text;
-              var attachments = _event$message.attachments;
+                if (attachments) {
+                  // We received an attachment
+                  // Let's reply with an automatic message
+                  fbMessage(sender,
+                    'Sorry I can only process text messages for now.')
+                  .catch(console.error);
+                } else if (text) {
+                  // We received a text message
 
-              if (attachments) {
-                // We received an attachment
-                // Let's reply with an automatic message
-                fbMessage(sender,
-                  'Sorry I can only process text messages for now.')
-                .catch(console.error);
-              } else if (text) {
-                // We received a text message
+                  // Let's forward the message to the Wit.ai Bot Engine
+                  // This will run all actions until our bot has nothing left to do
+                  wit.runActions(session.Id, // the user's current session
+                  text, // the user's message
+                  session.context // the user's current session state
+                  ).then(function(context) {
+                    // Our bot did everything it has to do.
+                    // Now it's waiting for further messages to proceed.
+                    console.log('Waiting for next user messages');
 
-                // Let's forward the message to the Wit.ai Bot Engine
-                // This will run all actions until our bot has nothing left to do
-                wit.runActions(sessionId, // the user's current session
-                text, // the user's message
-                sessions[sessionId].context // the user's current session state
-                ).then(function(context) {
-                  // Our bot did everything it has to do.
-                  // Now it's waiting for further messages to proceed.
-                  console.log('Waiting for next user messages');
+                    // Based on the session state, you might want to reset the session.
+                    // This depends heavily on the business logic of your bot.
+                    // Example:
+                    // if (context['done']) {
+                    //   delete sessions[sessionId];
+                    // }
 
-                  // Based on the session state, you might want to reset the session.
-                  // This depends heavily on the business logic of your bot.
-                  // Example:
-                  // if (context['done']) {
-                  //   delete sessions[sessionId];
-                  // }
-
-                  // Updating the user's current session state
-                  sessions[sessionId].context = context;
-                }).catch(function(err) {
-                  console.error('Oops! Got an error from Wit: ',
-                  err.stack || err);
-                });
-              }
+                    // Updating the user's current session state
+                    session.context = context;
+                    session.save();
+                  }).catch(function(err) {
+                    console.error('Oops! Got an error from Wit: ',
+                    err.stack || err);
+                  });
+                }
+              });
             })();
           } else {
             console.log('received event', JSON.stringify(event));
