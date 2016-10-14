@@ -96,7 +96,7 @@ module.exports = function(app) {
           // Let's forward our bot response to her.
           // We return a promise to let our bot know when we're done sending
           return fbMessage(recipientId, text).then(function() {
-            return null;
+            return Promise.resolve();
           }).catch(function(err) {
             var msg = 'An error occurred while forwarding the response to';
             console.error('Oops! ', msg, recipientId, ':', err.stack || err);
