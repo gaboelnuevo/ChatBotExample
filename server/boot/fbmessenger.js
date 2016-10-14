@@ -197,6 +197,7 @@ module.exports = function(app) {
                         context: context,
                         updatedAt: new Date(),
                       }, function(err, ob) {
+                        if (err) console.error(err);
                         return resolve();
                       });
                     });
