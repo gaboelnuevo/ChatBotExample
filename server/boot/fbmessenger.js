@@ -1,7 +1,8 @@
 'use strict';
 
+var crypto = require('crypto');
+
 module.exports = function(app) {
-  var crypto = require('crypto');
   var bodyParser = require('body-parser');
 
   var Wit = require('node-wit').Wit;
