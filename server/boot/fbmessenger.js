@@ -89,7 +89,7 @@ module.exports = function(app) {
       // Our bot has something to say!
       // Let's retrieve the Facebook user whose session belongs to
 
-      findSessionById(sessionId).then(function(session) {
+      return findSessionById(sessionId).then(function(session) {
         var recipientId = session.fbid;
         if (recipientId) {
           // Yay, we found our recipient!
