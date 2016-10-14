@@ -8,19 +8,19 @@ module.exports = function(Session) {
         active: true,
       },
     }, function(err, session) {
-      if (!err && session) {
-        cb(null, session);
+      if (err) {
+        cb(err);
       } else {
-        Session.create({
-          fbid: fbid,
-          active: true,
-        }, function(err, session) {
-          if (err) {
-            return cb(err);
-          } else {
-            cb(null, session);
-          }
-        });
+        if (session) {
+          cb(null, session);
+        } else {
+          Session.create({
+            fbid: fbid,
+            active: true,
+          }, function(err, session) {
+            cb(err, session);
+          });
+        }
       }
     });
   };
