@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = function(request) {
-  var context = _ref.context;
-  var entities = _ref.entities;
+  var context = request.context;
+  var entities = request.entities;
 
   return new Promise(function(resolve, reject) {
 	  // Here should go the api call, e.g.:
