@@ -1,6 +1,7 @@
 'use strict';
 
 var crypto = require('crypto');
+var extend = require('util')._extend;
 
 // Wit.ai parameters
 var WIT_TOKEN = process.env.WIT_TOKEN;
@@ -13,6 +14,7 @@ if (!FB_APP_SECRET) { throw new Error('missing FB_APP_SECRET'); }
 
 var FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
 if (!FB_VERIFY_TOKEN) { throw new Error('missing FB_VERIFY_TOKEN'); }
+
 
 module.exports = function(app) {
   var bodyParser = require('body-parser');
@@ -81,7 +83,7 @@ module.exports = function(app) {
   };
 
   // Our bot actions
-  var actions = {
+  var actions = extend({
     send: function send(_ref, _ref2) {
       var sessionId = _ref.sessionId;
       var text = _ref2.text;
@@ -112,7 +114,7 @@ module.exports = function(app) {
         return Promise.resolve();
       });
     },
-  };
+  }, require('../bot-actions'));
 
   // Setting up our bot
   var wit = new Wit({
